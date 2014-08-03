@@ -2,8 +2,6 @@ import re
 import requests
 import bs4
 
-known_beers = { 'highwaytothedankerzone': True, 'blindpig': True }
-
 def fetch_page(url):
     r = requests.get(url)
     if r.status_code == 200:
@@ -16,6 +14,11 @@ def extract_beers(doc):
     beers = []
     soup = bs4.BeautifulSoup(doc)
     for s in soup.stripped_strings:
-        if re.sub('\W+', '', s).lower() in known_beers:
+        if clean_beer_name(s) in known_beers:
             beers.append({ 'name': s })
     return beers
+
+def clean_beer_name(beer_name):
+    return re.sub('\W+', '', beer_name).lower()
+
+known_beers = dict.fromkeys(map(clean_beer_name, open('beerlistit/beers.txt').readlines()))
