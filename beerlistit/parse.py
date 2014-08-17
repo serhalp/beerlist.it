@@ -1,6 +1,18 @@
+# vim: set fileencoding=utf-8 :
+
 import re
 import requests
 import bs4
+
+keywords = frozenset([
+    u'stout', u'porter', u'saison', u'farmhouse', u'ale', u'lager', u'ipa', u'eisbock',
+    u'pale', u'dark', u'double', u'imperial', u'amber', u'wheat', u'brown', u'red', u'barleywine',
+    u'black', u'strong', u'cream', u'belgian', u'dubbel', u'tripel', u'quadrupel', u'quad',
+    u'lambic', u'bitter', u'esb', u'altbier', u'weissbier', u'dunkel', u'dunkelweizen', u'kolsh',
+    u'kölsch', u'weizenbock', u'bock', u'irish', u'gruit', u'wee', u'pilsner', u'pilsener',
+    u'steam', u'witbier', u'kellerbier', u'dunkel', u'helles', u'rauchbier', u'vienna'
+])
+LEN_THRESHOLD = 30
 
 def fetch_page(url):
     r = requests.get(url)
@@ -14,11 +26,6 @@ def extract_beers(doc):
     beers = []
     soup = bs4.BeautifulSoup(doc)
     for s in soup.stripped_strings:
-        if clean_beer_name(s) in known_beers:
+        if len(s) < LEN_THRESHOLD and frozenset(s.lower().split()) & keywords:
             beers.append({ 'name': s })
     return beers
-
-def clean_beer_name(beer_name):
-    return re.sub('\W+', '', beer_name).lower()
-
-known_beers = dict.fromkeys(map(clean_beer_name, open('beerlistit/beers.txt').readlines()))
