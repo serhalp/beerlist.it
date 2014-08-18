@@ -20,11 +20,11 @@ class ParseTestCase(unittest.TestCase):
         html = open('tests/example_menu_page.html', 'r').read()
         beers = extract_beers(html)
         self.assertIs(type(beers), list)
-        self.assertEquals(len(beers), 5)
+        self.assertEquals(len(beers), 14)
         self.assertEquals(len(beers[0]), 1)
 
     def test_extract_beers_fail(self):
         """Are fake beers unsuccessfully extracted from an HTML document?"""
-        beers = extract_beers('<div>Fakebeer</div><span>Not a real IPA I swear</span>')
+        beers = extract_beers('<div>Fakebeer</div><span>Not a real beer</span>')
         self.assertIs(type(beers), list)
         self.assertEquals(len(beers), 0)

@@ -1,5 +1,6 @@
 # vim: set fileencoding=utf-8 :
 
+import operator
 import re
 import requests
 import bs4
@@ -25,7 +26,32 @@ def extract_beers(doc):
     """Given an HTML document, return a list of putative beers found therein."""
     beers = []
     soup = bs4.BeautifulSoup(doc)
-    for s in soup.stripped_strings:
-        if len(s) < LEN_THRESHOLD and frozenset(s.lower().split()) & keywords:
-            beers.append({ 'name': s })
+
+    # Count number of keyword-matching strings per unique tag-depth pair.
+    locations = {}
+    for s in soup.strings:
+        if len(s) < LEN_THRESHOLD and frozenset(s.strip().lower().split()) & keywords:
+            loc = (s.parent.name, node_depth(s))
+            if loc in locations:
+                locations[loc] += 1
+            else:
+                locations[loc] = 1
+
+    if not locations:
+        return []
+
+    # Find tag-depth pair with maximal matches.
+    maxloc = max(locations.iteritems(), key=operator.itemgetter(1))[0]
+
+    # Get all strings matching this structure.
+    parents = filter(lambda tag: node_depth(tag) == maxloc[1] - 1, soup.findAll(maxloc[0]))
+    for p in parents:
+        for s in p.findAll(text=True, recursive=False):
+            s = s.strip()
+            if s and len(s) < LEN_THRESHOLD:
+                beers.append({ 'name': s })
+
     return beers
+
+def node_depth(s):
+    return sum(1 for _ in s.parents)
