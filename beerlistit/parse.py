@@ -23,8 +23,8 @@ def fetch_page(url):
         return None
 
 def extract_beers(doc):
-    """Given an HTML document, return a list of putative beers found therein."""
-    beers = []
+    """Given an HTML document, return a list of putative beer names found therein."""
+    beer_names = []
     soup = bs4.BeautifulSoup(doc)
 
     # Count number of keyword-matching strings per unique tag-depth pair.
@@ -49,9 +49,9 @@ def extract_beers(doc):
         for s in p.findAll(text=True, recursive=False):
             s = s.strip()
             if s and len(s) < LEN_THRESHOLD:
-                beers.append({ 'name': s })
+                beer_names.append(s)
 
-    return beers
+    return beer_names
 
 def node_depth(s):
     return sum(1 for _ in s.parents)
