@@ -21,4 +21,5 @@ def menu(request, url):
     return HttpResponse('This menu contains these beers:<br />' + _describe_beers(menu.beers.order_by('-rating')))
 
 def _describe_beers(beers):
-    return '<br />'.join(['<a href="%s">%s</a>: <strong>%s</strong>' % (b.url or '#', b.name, b.rating or '?') for b in beers])
+    return '<br />'.join(['<a href="%s">%s</a>: <strong>%s</strong>' % \
+        (b.url or '#', b.name, b.rating or 'N/A') for b in beers if b.url])
