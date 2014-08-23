@@ -1,7 +1,7 @@
 from parse import fetch_page, extract_beers
 from annotate import annotate
 
-from server.models import Beer, BeerMenu
+from models import Beer, BeerMenu
 
 def list_it(url):
     if BeerMenu.objects.filter(url=url).exists():

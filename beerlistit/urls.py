@@ -1,5 +1,10 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
+
+import views
 
 urlpatterns = patterns('',
-    url(r'^', include('server.urls'))
+    url(r'^$', views.index, name='index'),
+    url(r'^beer/$', views.all_beers, name='all_beers'),
+    url(r'^beer/(?P<name>[\w\-]+)/$', views.beer, name='beer'),
+    url(r'^(?P<url>http.+)/$', views.menu, name='menu')
 )

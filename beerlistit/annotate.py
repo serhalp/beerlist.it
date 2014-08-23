@@ -1,7 +1,7 @@
 import requests
 import bs4
 
-from server.models import Beer
+from models import Beer
 
 def annotate(beer):
     if not beer.url:

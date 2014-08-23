@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 
-from server.models import Beer, BeerMenu
-from beerlistit.beerlistit import list_it
+from models import Beer, BeerMenu
+from beerlistit import list_it
 
 def index(request):
     return HttpResponse('Hello, world.')
