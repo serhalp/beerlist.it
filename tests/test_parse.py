@@ -21,7 +21,7 @@ class ParseTestCase(unittest.TestCase):
         beers = extract_beers(html)
         self.assertIs(type(beers), list)
         self.assertEquals(len(beers), 14)
-        self.assertEquals(len(beers[0]), 1)
+        self.assertIs(type(beers[0]), unicode)
 
     def test_extract_beers_fail(self):
         """Are fake beers unsuccessfully extracted from an HTML document?"""
