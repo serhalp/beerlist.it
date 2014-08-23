@@ -8,7 +8,9 @@ def update_urls(beers):
     for beer in beers:
         if not beer.url:
             def update_url(r, beer=beer, **kwargs):
-                beer.url = extract_beer_url(r.content)
+                url = extract_beer_url(r.content)
+                if url:
+                    beer.url = url
             rs.append(grequests.get('http://beeradvocate.com/search/', \
                                     params={'qt': 'beer', 'q': beer.name}, \
                                     hooks={'response': update_url}))
@@ -25,7 +27,7 @@ def update_ratings(beers):
 
 def extract_beer_url(html):
     try:
-        return 'http://beeradvocate.com' + str(bs4.BeautifulSoup(html).find(id='baContent').find('a')['href'])
+        return 'http://beeradvocate.com' + unicode(bs4.BeautifulSoup(html).find(id='baContent').find('a')['href'])
     except:
         return None
 
