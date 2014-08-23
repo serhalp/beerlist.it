@@ -1,5 +1,5 @@
 from parse import fetch_page, extract_beers
-from annotate import annotate
+from annotate import update_urls, update_ratings
 
 from models import Beer, BeerMenu
 
@@ -10,11 +10,13 @@ def list_it(url):
 
     doc = fetch_page(url)
     beer_names = extract_beers(doc)
-    for name in beer_names:
-        beer = Beer.objects.get_or_create(name=name)[0]
-        annotate(beer)
-        menu.beers.add(beer)
+    beers = [Beer.objects.get_or_create(name=name)[0] for name in beer_names]
+    menu.beers.add(*beers)
+    update_urls(beers)
+    update_ratings(beers)
 
+    for beer in beers:
+        beer.save()
     menu.save()
 
     return menu

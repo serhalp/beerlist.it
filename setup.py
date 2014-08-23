@@ -10,7 +10,7 @@ setup(name='beerlistit',
       packages=['beerlistit'],
       install_requires=[
           'BeautifulSoup4',
-          'requests'
+          'grequests'
           'django'
       ],
       zip_safe=True)

@@ -1,28 +1,33 @@
-import requests
+import grequests
 import bs4
 
 from models import Beer
 
-def annotate(beer):
-    if not beer.url:
-        beer.url = find_beer_page(beer.name)
-    if beer.url:
-        beer.rating = find_beer_rating(beer.url)
-    beer.save()
+def update_urls(beers):
+    rs = []
+    for beer in beers:
+        if not beer.url:
+            def update_url(r, beer=beer, **kwargs):
+                beer.url = extract_beer_url(r.content)
+            rs.append(grequests.get('http://beeradvocate.com/search/', \
+                                    params={'qt': 'beer', 'q': beer.name}, \
+                                    hooks={'response': update_url}))
+    grequests.map(rs)
 
-def find_beer_page(beer_name):
-    html = requests.get('http://beeradvocate.com/search/', params={'qt': 'beer', 'q': beer_name}).content
-    url = extract_beer_url(html)
-    return 'http://beeradvocate.com' + url if url else None
+def update_ratings(beers):
+    rs = []
+    for beer in beers:
+        if beer.url:
+            def update_rating(r, beer=beer, **kwargs):
+                beer.rating = extract_rating(r.content)
+            rs.append(grequests.get(beer.url, hooks={'response': update_rating}))
+    grequests.map(rs)
 
 def extract_beer_url(html):
     try:
-        return str(bs4.BeautifulSoup(html).find(id='baContent').find('a')['href'])
+        return 'http://beeradvocate.com' + str(bs4.BeautifulSoup(html).find(id='baContent').find('a')['href'])
     except:
         return None
-
-def find_beer_rating(beer_url):
-    return extract_rating(requests.get(beer_url).content)
 
 def extract_rating(html):
     try:
