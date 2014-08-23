@@ -11,6 +11,7 @@ setup(name='beerlistit',
       install_requires=[
           'BeautifulSoup4',
           'requests'
+          'django'
       ],
       zip_safe=True)
 

@@ -1,10 +1,14 @@
 import requests
 import bs4
 
+from models import Beer
+
 def annotate(beer):
-    beer['url'] = url = find_beer_page(beer['name'])
-    if url:
-        beer['rating'] = find_beer_rating(url)
+    if not beer.url:
+        beer.url = find_beer_page(beer.name)
+    if beer.url:
+        beer.rating = find_beer_rating(beer.url)
+    beer.save()
 
 def find_beer_page(beer_name):
     html = requests.get('http://beeradvocate.com/search/', params={'qt': 'beer', 'q': beer_name}).content
